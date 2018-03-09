@@ -26,10 +26,12 @@ def createReplyMsg(touser, fromuser, msg):
 	ET.SubElement(root, 'FromUserName').text = fromuser
 	ET.SubElement(root, 'MsgType').text = 'text'
 	ET.SubElement(root, 'Content').text = msg
+	ET.SubElement(root, 'CreateTime').text = '123456'
+	ET.SubElement(root, 'MsgId').text = '1'
 	return ET.tostring(root, encoding='utf-8')
 
 def processWeChatPost(xmlbody):
-	root = ET.fromstring(request.body)
+	root = ET.fromstring(xmlbody)
 	msgtype = root.find('MsgType').text
 	touser = root.find('ToUserName').text
 	fromuser = root.find('FromUserName').text
@@ -52,4 +54,5 @@ def fromwechat(request):
  		return HttpResponse(echostr)
 	else:
 		reply = processWeChatPost(request.body)
+		print reply
 		return HttpResponse(reply)
