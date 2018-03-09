@@ -16,6 +16,10 @@ def index(request):
     context = {'latest_question_list': WechatService.GetUserList()}
     return render(request, 'wechattest/index.html', context)
 
+def showqrcode(request):
+	qrcode = WechatService.GetQrCode()
+	return HttpResponse(qrcode)
+
 @csrf_exempt
 def fromwechat(request):
 	if request.method == 'GET':
