@@ -20,6 +20,28 @@ def showqrcode(request):
 	qrcode = WechatService.GetQrCode()
 	return render(request, 'wechattest/showqrcode.html',{'qrcode':qrcode})
 
+def createReplyMsg(touser, fromuser, msg):
+	root = ET.Element('xml')
+	ET.SubElement(root, 'ToUserName').text = touser
+	ET.SubElement(root, 'FromUserName').text = fromuser
+	ET.SubElement(root, 'MsgType').text = 'text'
+	ET.SubElement(root, 'Content').text = msg
+	return ET.tostring(root, encoding='utf-8')
+
+def processWeChatPost(xmlbody):
+	root = ET.fromstring(request.body)
+	msgtype = root.find('MsgType').text
+	touser = root.find('ToUserName').text
+	fromuser = root.find('FromUserName').text
+	if msgtype == 'text':
+		return createReplyMsg(fromuser, touser, 'reply : '+root.find('Content').text)
+	elif msgtype == 'event':
+		root.find('ToUserName').text = fromuser
+		root.find('FromUserName').text = touser
+		return createReplyMsg(fromuser, touser, 'event : {} {}'.format(root.find('Event').text, root.find('EventKey').text))
+	else:
+		return createReplyMsg(fromuser, touser, 'unknown event')
+
 @csrf_exempt
 def fromwechat(request):
 	if request.method == 'GET':
@@ -29,10 +51,5 @@ def fromwechat(request):
  		echostr = request.GET['echostr'] or ""
  		return HttpResponse(echostr)
 	else:
-		root = ET.fromstring(request.body)
-		touser = root.find('ToUserName').text
-		fromuser = root.find('FromUserName').text
-		root.find('ToUserName').text = fromuser
-		root.find('FromUserName').text = touser
-		reply = ET.tostring(root, encoding='utf-8')
+		reply = processWeChatPost(request.body)
 		return HttpResponse(reply)
