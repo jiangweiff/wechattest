@@ -18,7 +18,7 @@ def index(request):
 
 def showqrcode(request):
 	qrcode = WechatService.GetQrCode()
-	return HttpResponse(qrcode)
+	return render(request, 'wechattest/showqrcode.html',{'qrcode':qrcode})
 
 @csrf_exempt
 def fromwechat(request):

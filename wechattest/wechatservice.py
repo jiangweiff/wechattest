@@ -3,8 +3,9 @@ import thread
 import requests
 import time
 import logging
+import json
 
-header = { "Content-Type" : "application/json",
+header = { "Content-Type" : "application/x-www-form-urlencoded",
 	}
 
 class WechatService:
@@ -49,12 +50,12 @@ class WechatService:
 	def GetQrCode():
 		tk = WechatService.GetAccessToken()
 		page = requests.post('https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token={}'.format(tk),
-			{'expire_seconds': 604800, 'action_name': 'QR_SCENE', 'action_info': {'scene': {'scene_id': 123}}},
+			json.dumps({'expire_seconds': 604800, 'action_name': 'QR_SCENE', 'action_info': {'scene': {'scene_id': 123}}}),
 			headers = header)
-		logging.getLogger('mylogger').debug(page.json())
 		ticket = page.json()['ticket']
-		page = requests.get('https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket={}'.format(ticket))
-		return page
+		#page = requests.get('https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket={}'.format(ticket))
+		#return page.text
+		return 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket={}'.format(ticket)
 
 	@staticmethod
 	def GetUserList():

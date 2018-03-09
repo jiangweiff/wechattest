@@ -150,7 +150,7 @@ LOGGING = {
         'django.request': {
             'handlers': ['console'],
             'propagate': False,
-            'level': 'ERROR'
+            'level': 'DEBUG'
         },
         'mylogger': {
             'handlers' : ['console',],
